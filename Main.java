@@ -1,24 +1,24 @@
-import lejos.hardware.Button; 
+import lejos.hardware.Button;
 
 public class Main {
-	
+
 	public static void main(String[] args) {
 		Behavior[] behaviours = {
 			// insert your behavior instantiation here
 			// we should try running combonations of behaviors too at some point to make
 			// sure integration works
-//		  new Avoider(30), // avoider arg is "too close"  
-//		  new Pathfinder(),
-// 		  new Delivery(50,0.312f)
-		}; 
+		  new Avoider(30), // avoider arg is "too close"
+		  new Pathfinder(),
+ 		  new Delivery(50,0.312f)
+		};
 
 		System.out.println("STARTING MAIN");
 		Button.waitForAnyPress();
 		Robot.gyroReset();
-		Robot.updateState(); 
-		
+		Robot.updateState();
+
 		// Code for initial cmd input
-		
+
 		// Richard might want to put grab pizza here
 		while (Button.ESCAPE.isUp()) {
 			for(int i=0; i<behaviours.length; i++){
@@ -27,13 +27,13 @@ public class Main {
 					break;
 				}
 			}
-			Robot.updateState(); 
+			Robot.updateState();
 			// System.out.println(Robot.position);
-			
-			if (Button.UP.isDown()) 
+
+			if (Button.UP.isDown())
 				System.out.println(Robot.position);
 		}
-		System.out.println(Robot.position); 
+		System.out.println(Robot.position);
 	}
-	
+
 }
