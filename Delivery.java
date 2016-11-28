@@ -25,18 +25,20 @@ public class Delivery implements Behavior {
     RETURNING,
     DONE
   }
-  public State state = State.START;
+  public State state = State.START;		// change this line to State.START for full run. to test sequences, change this line
 
   // Constructor with default values
-  public Delivery(int targetDoor, float targetColor) {
+  public Delivery(float v, float targetColor, int targetDoor) {
     this.targetDoor = targetDoor;
     this.targetColor = targetColor;
+    this.v = v;	  
     this.drivewayLength = 30f;
     this.roadLength = 140f;
   }
 
   // detailed constructor
-  public Delivery(int targetDoor, float targetColor, float drivewayLength, float roadLength) {
+  public Delivery(float v, float targetColor, int targetDoor, float drivewayLength, float roadLength) {
+    this.v = v;
     this.targetDoor = targetDoor;
     this.targetColor = targetColor;
     this.drivewayLength = drivewayLength;
@@ -56,7 +58,7 @@ public class Delivery implements Behavior {
   // 	on colored loop oriented antiparrallel to road
   public void act(int dummy) {
     // Make sure ultrasonic is looking the right direction, i.e. toward the side
-	  System.out.println(this.state);
+	  System.out.println(this.state); // debug print
     switch(this.state) {
       case START: // look toward the correct side
         Robot.look((int)(90*Math.signum(this.targetDoor)));
@@ -113,6 +115,7 @@ public class Delivery implements Behavior {
         Robot.lineFollow(this.v,350,30,500,this.targetColor); // drive back to starting position. yolo because we don't care about following the line
         if (Robot.dist >= this.distToHouse) { // could also be implemented with the colour sensor
           this.state = State.DONE;
+	  Robot.readyToReturn = 1;
         }
         break;
       default:
