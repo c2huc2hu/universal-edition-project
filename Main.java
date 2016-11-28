@@ -7,18 +7,19 @@ public class Main {
 		Robot.gyroReset();
 		Robot.updateState();
 		
+		int[] targetRoad = {1, 2, 3};
 		int[] targetDoors = {-3, -2, -1, 1, 2, 3};
 		int[] targetPizza = {-1, 1};
-		int[] targetSel = {0,0};
-		int[] targetSize = {2,6};
+		int[] targetSel = {0,0,0};
+		int[] targetSize = {2,6,3};
 		int i = 0;
 		
 		// Code for initial cmd input
 // 		get target door
 // 		get target pizza
 		while (Button.ENTER.isUp()) {
-			if(Button.RIGHT.isDown()) i = Math.mod(i+1,2);
-			if(Button.LEFT.isDown()) i = Math.mod(i-1,2);
+			if(Button.RIGHT.isDown()) i = Math.mod(i+1,3);
+			if(Button.LEFT.isDown()) i = Math.mod(i-1,3);
 			if(Button.UP.isDown()) {
 				targetSel[i] = Math.mod(targetSel[i]+1,targetSize[i]);
 			}
@@ -27,7 +28,7 @@ public class Main {
 			}
 			if ( i == 0) System.out.println(targetDoors[targetSel[i]]);
 			if ( i == 1) System.out.println(targetPizza[targetSel[i]]);
-		
+			if ( i == 2) System.out.println(targetRoad[targetSel[i]]);
 		}
 		
 		
@@ -37,7 +38,7 @@ public class Main {
 			// sure integration works
 		  new Avoider(30), // avoider arg is "too close", deliberately un-comment this to look at whether or not delivery will integrate with other things.
 //		  new Pathfinder(),
-		  new Delivery(50,0.312f) // arg: base speed when travelling on road, black line sonic value, need to put in target door
+		  new Delivery(50,0.312f,targetDoor[targetSel[1]]) // arg: base speed when travelling on road, black line sonic value, need to put in target door
 		}; 
 
 
