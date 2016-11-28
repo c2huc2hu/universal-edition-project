@@ -24,8 +24,9 @@ public class Robot {
 	
 	public static float LFintegral, LFderiv, LFlastErr;
 	
-	public static int readyToDeliver = 1;
-	public static int readyToReturn = 0;
+	public static int readyToDeliver = 1;  // defualt values should be 0, set readyToDeliver to 1 to activate delivery behavior
+	public static int readyToReturn = 0;   // delivery behavior ends by setting this to 1
+					       // robot shouldn't be driven when we are delivering!! Check with XNOR
 
 	public static void drive(float l, float r) {
 		// B-> to left C-> to right
