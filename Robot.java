@@ -10,7 +10,7 @@ public class Robot {
 	private static float GRIPPER_GEAR_RATIO = 2f;
 	private static float TURN_SPEED = 90;
 	private static float TURN_WHEEL_RATIO = 3.5f;
-	private static float ULTRASONIC_GEAR_RATIO = 1; 
+	private static float ULTRASONIC_GEAR_RATIO = 1;
 
 	private static EV3ColorSensor colorSensor = new EV3ColorSensor(SensorPort.S2);
 	private static EV3UltrasonicSensor sonicSensor = new EV3UltrasonicSensor(SensorPort.S3);
@@ -20,10 +20,10 @@ public class Robot {
 	private static Position lastFixedPosition = new Position(0, 0); // this is updated when we reset tacho
 	public static int ticksSinceLastObstacle = 0;
 
-	public static float color, sonic, gyro, dist;
-	
+	public static float color, sonic, gyro, gyroR, dist;
+
 	public static float LFintegral, LFderiv, LFlastErr;
-	
+
 	public static int readyToDeliver = 1;
 	public static int readyToReturn = 0;
 
@@ -47,7 +47,7 @@ public class Robot {
 			Motor.C.stop(true);
 		}
 	}
-	
+
 	/* Makes the ultrasonic sensor look in a given direction */
 	public static void look(int deg) {
 		// always start sensor pointing straight forward. The allowed motion is then [-90,90]
@@ -92,8 +92,8 @@ public class Robot {
 		Robot.stop();
 	}
 	public static void stop() {
-		Motor.B.setSpeed(0); 
-		Motor.C.setSpeed(0); 
+		Motor.B.setSpeed(0);
+		Motor.C.setSpeed(0);
 	}
 
 	/*
@@ -157,11 +157,11 @@ public class Robot {
 		}
 		return (float) (sample[0]);
 	}
-	
+
 	public static void gyroReset() {
-		gyroSensor.reset(); 
+		gyroSensor.reset();
 	}
-	
+
 	/* Resets the tachometer for the motors. make sure you call this when you turn! */
 	public static void tachoReset() {
 		lastFixedPosition.increment(dist * Math.cos(Math.toRadians(gyro)), dist * Math.sin(Math.toRadians(gyro)));
@@ -173,27 +173,28 @@ public class Robot {
 		// save sensor readings
 		dist = pollDist(false);
 		gyro = pollGyro(false);
+		gyroR = Math.toRadians(gyro);
 		color = pollColor(false);
 		sonic = pollSonic(false);
 
 		Robot.position = Position.add(Robot.lastFixedPosition, new Position(
-				dist * Math.cos(Math.toRadians(gyro)), 
+				dist * Math.cos(Math.toRadians(gyro)),
 				dist * Math.sin(Math.toRadians(gyro))));
 		return Robot.position;
 	}
-	
+
 	public static void lineFollow(float v,int p, int i, int d,float tar) {
 		//v = 250 p = 350 i = 30 d= 500 tar = 0.312
 		float err = tar - Robot.sonic;
-		
-		Robot.LFintegral *= 0.98; 
+
+		Robot.LFintegral *= 0.98;
 		Robot.LFintegral += err;
-		Robot.LFderiv = err - Robot.LFlastErr; 
+		Robot.LFderiv = err - Robot.LFlastErr;
 		Robot.LFlastErr = err;
-		
-		float leftSpeed = v + p * err + i * Robot.LFintegral + d * Robot.LFderiv; 
+
+		float leftSpeed = v + p * err + i * Robot.LFintegral + d * Robot.LFderiv;
 		float rightSpeed = v - (p * err + i * Robot.LFintegral + d * Robot.LFderiv);
-		
+
 		Robot.drive(leftSpeed, rightSpeed);
 	}
 }
