@@ -29,6 +29,7 @@ public class Robot {
 
 	public static void drive(float l, float r) {
 		// B-> to left C-> to right
+		// if l > r, pivot CW. if r < l, pivot CCW
 		Motor.B.setSpeed(Math.abs(l));
 		Motor.C.setSpeed(Math.abs(r));
 		if (l > 0) {

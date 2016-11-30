@@ -10,6 +10,7 @@ public class Avoider implements Behavior {
     if (isAvoiding) {
       if (Robot.sonic >= this.tooClose) {
         // we have passed the obstacle.
+        Robot.look(0);
         this.isAvoiding = false;
       }
       return true;
