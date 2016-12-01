@@ -1,7 +1,11 @@
 public class PizzaGrab {
   public int targetPizza;
-  public PizzaGrab(int _targetPizza){
+  public float s1 = 14;
+  public float s2 = 56;
+  public PizzaGrab(int _targetPizza, float _s1, float _s2){
     this.targetPizza = _targetPizza;
+    this.s1 = _s1;
+    this.s2 = _s2;
   }
   
   /*
@@ -10,11 +14,11 @@ public class PizzaGrab {
 	public void moveGrab() {
     	float GRIPPER_CLOSED_POSITION = 45; // angle that gripper should be rotated to
         float convS = 360f/17.3f; //Conversion factor for going straight
-        int s1 = 14; //First go straight for 14cm
-        int r1 = 90 * this.targetPizza; //Rotate clockwise 90 degrees
-        int s2 = 56; //Go striaght for 56cm
-        int s3 = -56; //Backward for 10cm
-        int r2 = -90 * this.targetPizza; //Rotate 90 degrees counterclockwise
+        float s1 = this.s1; //First go straight for 14cm
+        float r1 = 90 * this.targetPizza; //Rotate clockwise 90 degrees
+        float s2 = this.s2; //Go striaght for 56cm
+        float s3 = -this.s2; //Backward for 56cm
+        float r2 = -90 * this.targetPizza; //Rotate 90 degrees counterclockwise
         float s = 300; //Speed of the robot
 
     	  Robot.look(0);
