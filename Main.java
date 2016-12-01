@@ -3,37 +3,44 @@ import lejos.hardware.Button;
 public class Main {
 	
 	public static void main(String[] args) {
-		Behavior[] behaviours = {
-			// insert your behavior instantiation here
-			// we should try running combonations of behaviors too at some point to make
-			// sure integration works
-//		  new Avoider(30), // avoider arg is "too close"  
-//		  new Pathfinder(),
-// 		  new Delivery(50,0.312f)
-		}; 
 
 		System.out.println("STARTING MAIN");
-		Button.waitForAnyPress();
 		Robot.gyroReset();
-		Robot.updateState(); 
 		
-		// Code for initial cmd input
+		int targetPizza = 1;
+		float s1 = 14;
+		float s2 = 56;
 		
-		// Richard might want to put grab pizza here
 		while (Button.ESCAPE.isUp()) {
-			for(int i=0; i<behaviours.length; i++){
-				if(behaviours[i].checkActive()) {
-					behaviours[i].act(-1);
-					break;
-				}
-			}
-			Robot.updateState(); 
-			// System.out.println(Robot.position);
-			
-			if (Button.UP.isDown()) 
-				System.out.println(Robot.position);
+			int sel = 0;
+			while(Button.ENTER.isUp()){
+			    if(Button.RIGHT.isDown()) sel += 1;
+			    if(Button.LEFT.isDown())  sel -= 1;
+			    if(sel > 2) sel=0;
+			    if(sel < 0) sel =2;
+			    swtich(sel){
+				case(0):
+				if(Button.UP.isDown()) targetPizza+=1;
+				if(Button.DOWN.isDown()) targetPizza -=1;
+				System.out.print("targetpizza: ");
+				System.out.println(targetPizza);
+				case(1):
+				if(Button.UP.isDown()) s1+=1f;
+				if(Button.DOWN.isDown()) s1-=1f;
+				System.out.print("s1: ");
+				System.out.println(s1);
+				case(2):
+				if(Button.UP.isDown()) s2+=1f;
+				if(Button.DOWN.isDown()) s2-=1f;
+				System.out.print("s2: ");
+				System.out.println(s2);
+            			}
+        		}
+			// Code for initial cmd input
+			PizzaGrab pizzaGrab = new PizzaGrab(targetPizza,s1,s2);
+			// Richard might want to put grab pizza here
+			pizzaGrab.moveGrab();	
 		}
-		System.out.println(Robot.position); 
 	}
 	
 }
