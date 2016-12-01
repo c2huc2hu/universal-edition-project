@@ -18,24 +18,27 @@ public class Main {
 			    if(Button.LEFT.isDown())  sel -= 1;
 			    if(sel > 2) sel=0;
 			    if(sel < 0) sel =2;
-			    swtich(sel){
+			    switch(sel){
 				case(0):
-				if(Button.UP.isDown()) targetPizza+=1;
-				if(Button.DOWN.isDown()) targetPizza -=1;
-				System.out.print("targetpizza: ");
-				System.out.println(targetPizza);
+					if(Button.UP.isDown()) targetPizza+=1;
+					if(Button.DOWN.isDown()) targetPizza -=1;
+					System.out.print("targetpizza: ");
+					System.out.println(targetPizza);
+					break; 
 				case(1):
-				if(Button.UP.isDown()) s1+=1f;
-				if(Button.DOWN.isDown()) s1-=1f;
-				System.out.print("s1: ");
-				System.out.println(s1);
+					if(Button.UP.isDown()) s1+=1f;
+					if(Button.DOWN.isDown()) s1-=1f;
+					System.out.print("s1: ");
+					System.out.println(s1);
+					break;
 				case(2):
-				if(Button.UP.isDown()) s2+=1f;
-				if(Button.DOWN.isDown()) s2-=1f;
-				System.out.print("s2: ");
-				System.out.println(s2);
-            			}
-        		}
+					if(Button.UP.isDown()) s2+=1f;
+					if(Button.DOWN.isDown()) s2-=1f;
+					System.out.print("s2: ");
+					System.out.println(s2);
+					break; 
+    			}
+    		}
 			// Code for initial cmd input
 			PizzaGrab pizzaGrab = new PizzaGrab(targetPizza,s1,s2);
 			// Richard might want to put grab pizza here

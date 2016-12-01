@@ -12,7 +12,6 @@ public class PizzaGrab {
 	 * Uses the gripper to grab the object. Note: this function is blocking
 	 * */
 	public void moveGrab() {
-    	float GRIPPER_CLOSED_POSITION = 45; // angle that gripper should be rotated to
         float convS = 360f/17.3f; //Conversion factor for going straight
         float s1 = this.s1; //First go straight for 14cm
         float r1 = 90 * this.targetPizza; //Rotate clockwise 90 degrees
