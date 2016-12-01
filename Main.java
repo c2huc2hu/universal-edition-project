@@ -10,21 +10,22 @@ public class Main {
 		int[] targetRoad = {1, 2, 3};
 		int[] targetDoors = {-3, -2, -1, 1, 2, 3};
 		int[] targetPizza = {-1, 1};
-		int[] targetSel = {20,60,30};  // off set these so that we can have some clicks until we get into the negative numbers. 
+		int[] targetSel = {0,0,0};  // off set these so that we can have some clicks until we get into the negative numbers. 
 		int[] targetSize = {2,6,3};
-		int i = 30;
+		int i = 0;
 		
 		// Code for initial cmd input
 // 		get target door
 // 		get target pizza
 		while (Button.ENTER.isUp()) {
 			if(Button.RIGHT.isDown()) i = (i+1)%3;
-			if(Button.LEFT.isDown()) i = (i-1)%3; // mode of neg num isn't well defined
+			if(Button.LEFT.isDown()) { if ((i-1) < 0) i = 2; else i = i-1;}
 			if(Button.UP.isDown()) {
 				targetSel[i] = (targetSel[i]+1)%targetSize[i];
 			}
 			if(Button.DOWN.isDown()) {
-				targetSel[i] = (targetSel[i]-1)%targetSize[i]; // apparently mod of neg num isn't well defined.. :(
+				if ((targetSel[i]-1)<0) targetSel[i] = targetSize[i]-1;
+				else targetSel[i] = (targetSel[i]-1); 
 			}
 			if ( i == 0) System.out.println("pizza: "+targetPizza[targetSel[i]]);
 			if ( i == 1) System.out.println("door: "+targetDoors[targetSel[i]]);
