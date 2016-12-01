@@ -1,0 +1,33 @@
+public class PizzaGrab {
+  public int targetPizza;
+  public PizzaGrab(int _targetPizza){
+    this.targetPizza = _targetPizza;
+  }
+  
+  /*
+	 * Uses the gripper to grab the object. Note: this function is blocking
+	 * */
+	public void moveGrab() {
+    	float GRIPPER_CLOSED_POSITION = 45; // angle that gripper should be rotated to
+        float convS = 360f/17.3f; //Conversion factor for going straight
+        int s1 = 14; //First go straight for 14cm
+        int r1 = 90 * this.targetPizza; //Rotate clockwise 90 degrees
+        int s2 = 56; //Go striaght for 56cm
+        int s3 = -56; //Backward for 10cm
+        int r2 = -90 * this.targetPizza; //Rotate 90 degrees counterclockwise
+        float s = 300; //Speed of the robot
+
+    	  Robot.look(0);
+        Robot.rotate(s, (int)(s1*convS), (int)(s1*convS));
+        Robot.turn(r1);
+        Robot.rotate(s, (int)(s2*convS), (int)(s2*convS));
+        
+        //Grab
+        Robot.grab();
+        
+        //Move back 
+        Robot.rotate(s, (int)(-s3*convS), (int)(-s3*convS));
+        Robot.turn(r2);
+        
+	}
+}
