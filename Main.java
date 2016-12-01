@@ -10,25 +10,25 @@ public class Main {
 		int[] targetRoad = {1, 2, 3};
 		int[] targetDoors = {-3, -2, -1, 1, 2, 3};
 		int[] targetPizza = {-1, 1};
-		int[] targetSel = {0,0,0};
+		int[] targetSel = {20,60,30};  // off set these so that we can have some clicks until we get into the negative numbers. 
 		int[] targetSize = {2,6,3};
-		int i = 0;
+		int i = 30;
 		
 		// Code for initial cmd input
 // 		get target door
 // 		get target pizza
 		while (Button.ENTER.isUp()) {
 			if(Button.RIGHT.isDown()) i = (i+1)%3;
-			if(Button.LEFT.isDown()) i = (i-1)%3;
+			if(Button.LEFT.isDown()) i = (i-1)%3; // mode of neg num isn't well defined
 			if(Button.UP.isDown()) {
 				targetSel[i] = (targetSel[i]+1)%targetSize[i];
 			}
-			if(Button.UP.isDown()) {
-				targetSel[i] = (targetSel[i]-1)%targetSize[i];
+			if(Button.DOWN.isDown()) {
+				targetSel[i] = (targetSel[i]-1)%targetSize[i]; // apparently mod of neg num isn't well defined.. :(
 			}
-			if ( i == 0) System.out.println(targetDoors[targetSel[i]]);
-			if ( i == 1) System.out.println(targetPizza[targetSel[i]]);
-			if ( i == 2) System.out.println(targetRoad[targetSel[i]]);
+			if ( i == 0) System.out.println("pizza: "+targetPizza[targetSel[i]]);
+			if ( i == 1) System.out.println("door: "+targetDoors[targetSel[i]]);
+			if ( i == 2) System.out.println("road: "+targetRoad[targetSel[i]]);
 		}
 		
 		
@@ -56,7 +56,7 @@ public class Main {
 			if (Button.UP.isDown()) 
 				System.out.println(Robot.position);
 		}
-		System.out.println(Robot.position); 
+//		System.out.println(Robot.position); 
 	}
 	
 }
