@@ -17,25 +17,20 @@ public class PizzaGrab {
         float s1 = this.s1; //First go straight for 14cm
         float r1 = 90 * this.targetPizza; //Rotate clockwise 90 degrees
         float s2 = this.s2; //Go striaght for 56cm
-        float s3 = -this.s2; //Backward for 56cm
         float r2 = -90 * this.targetPizza; //Rotate 90 degrees counterclockwise
         float s = 300; //Speed of the robot
 
-    	  Robot.look(0);
-        Robot.rotate(s, (int)(s1*convS), (int)(s1*convS));
-        Robot.tachoReset();
-        Robot.rotate(s, (int)(r1*convR), (int)(-r1*convR));
-        Robot.tachoReset();
-        Robot.rotate(s, (int)(s2*convS), (int)(s2*convS));
+        Robot.rotate(s, (int)(s1*convS), (int)(s1*convS)); //Move up
+        Robot.rotate(s, (int)(r1*convR), (int)(-r1*convR)); //Rotate 90 degrees
+        Robot.rotate(s, (int)(s2*convS), (int)(s2*convS)); //Move to the pizza
         
         //Grab
-        Robot.grab();
+        Robot.grab(); //Grab the pizza
         
         //Move back 
-        Robot.tachoReset();
-        Robot.rotate(s, (int)(s3*convS), (int)(s3*convS));
-        Robot.tachoReset();
-        Robot.rotate(s, (int)(r2*convR), (int)(-r2*convR));
+        Robot.rotate(s, (int)(-s2*convS), (int)(-s2*convS)); //Move back
+        Robot.rotate(s, (int)(r2*convR), (int)(-r2*convR)); //Rotate to the start pose
+	Robot.rotate(s, (int)(-s1*convS), (int)(-s1*convS)); //Back to the origin
         
 	}
 }
