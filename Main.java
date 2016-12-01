@@ -42,7 +42,10 @@ public class Main {
 			// Code for initial cmd input
 			PizzaGrab pizzaGrab = new PizzaGrab(targetPizza,s1,s2);
 			// Richard might want to put grab pizza here
-			pizzaGrab.moveGrab();	
+			pizzaGrab.moveGrab();
+			Robot.drop();
+			Button.waitForAnyPress();	
+			
 		}
 	}
 	

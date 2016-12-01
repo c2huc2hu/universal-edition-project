@@ -13,6 +13,7 @@ public class PizzaGrab {
 	 * */
 	public void moveGrab() {
         float convS = 360f/17.3f; //Conversion factor for going straight
+        float convR = 2.05f; //conversion for the rotation
         float s1 = this.s1; //First go straight for 14cm
         float r1 = 90 * this.targetPizza; //Rotate clockwise 90 degrees
         float s2 = this.s2; //Go striaght for 56cm
@@ -22,15 +23,19 @@ public class PizzaGrab {
 
     	  Robot.look(0);
         Robot.rotate(s, (int)(s1*convS), (int)(s1*convS));
-        Robot.turn(r1);
+        Robot.tachoReset();
+        Robot.rotate(s, (int)(r1*convR), (int)(-r1*convR));
+        Robot.tachoReset();
         Robot.rotate(s, (int)(s2*convS), (int)(s2*convS));
         
         //Grab
         Robot.grab();
         
         //Move back 
-        Robot.rotate(s, (int)(-s3*convS), (int)(-s3*convS));
-        Robot.turn(r2);
+        Robot.tachoReset();
+        Robot.rotate(s, (int)(s3*convS), (int)(s3*convS));
+        Robot.tachoReset();
+        Robot.rotate(s, (int)(r2*convR), (int)(-r2*convR));
         
 	}
 }
