@@ -22,7 +22,7 @@ public class Robot {
 
 	public static float color, sonic, gyro, dist;
 	
-	public static float LFintegral, LFderiv, LFlastErr;
+	public static float LFintegral = 0 , LFderiv = 0, LFlastErr = 0;
 	
 	public static int readyToDeliver = 1;  // defualt values should be 0, set readyToDeliver to 1 to activate delivery behavior
 	public static int readyToReturn = 0;   // delivery behavior ends by setting this to 1
@@ -97,7 +97,11 @@ public class Robot {
 		Motor.C.setSpeed(0); 
 	}
 
-	/*
+	public static void rotateDeg(float s, int deg) {
+		float convR = 2.05f;
+		Robot.rotate(s, (int)(deg*convR), (int)(-deg*convR));
+	}
+	
 	public static void rotate(float s, int l, int r) {
 		// B-> to left C-> to right
 		// use s as a base speed for motor B arbitrarily
@@ -105,7 +109,7 @@ public class Robot {
 		Motor.C.setSpeed(Math.abs(s));
 		Motor.B.rotate(l,true);
 		Motor.C.rotate(r);
-	} */
+	} 
 
 	/*
 	public static void arc(float s, int l, int r) {
@@ -185,7 +189,7 @@ public class Robot {
 	
 	public static void lineFollow(float v,int p, int i, int d,float tar) {
 		//v = 250 p = 350 i = 30 d= 500 tar = 0.312
-		float err = tar - Robot.sonic;
+		float err = tar - Robot.color;
 		
 		Robot.LFintegral *= 0.98; 
 		Robot.LFintegral += err;

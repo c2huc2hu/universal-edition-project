@@ -46,7 +46,7 @@ public class Delivery implements Behavior {
   }
 
   public boolean checkActive() {
-    return Robot.readyToDeliver==1 && this.state != State.DONE; // active when on line and not finished
+    return Robot.readyToDeliver==1 && this.state != State.TURNING_BACK; // active when on line and not finished
   }
 
   // Assumed start:
@@ -61,13 +61,13 @@ public class Delivery implements Behavior {
 	  System.out.println(this.state); // debug print
     switch(this.state) {
       case START: // look toward the correct side
-        Robot.look((int)(90*Math.signum(this.targetDoor)));
+        Robot.look((int)(-90*Math.signum(this.targetDoor))); //POS IS TO LOOK RIGHT
         this.initialOrientation = Robot.gyro;
         this.state = State.FINDING_LINE;
+        Robot.rotateDeg(200, 80); //turns in cw
         break;
       case FINDING_LINE: // Find the line to follow
-        Robot.turn(20);
-        Robot.drive(20,-20);
+        Robot.drive(-20,20); // turns in ccw
         if (Math.abs(Robot.color - this.targetColor) < e) {
           this.state = State.LINE_FOLLOWING;
           Robot.stop();
@@ -75,26 +75,37 @@ public class Delivery implements Behavior {
         }
         break;
       case LINE_FOLLOWING: // we need to test if we're on the line as well
-        Robot.lineFollow(this.v,350,30,500,this.targetColor);   //v = 250 p = 350 i = 30 d= 500 tar = 0.312
-        if (Robot.dist > roadLength)
-          // report failure
-          System.out.println("reached end of road, didnt find anything :(");
-        else if (Robot.sonic - this.prevSonic < -e*10) // what are you trying to test here? you're testing for posedge(sonic), but why drivewayLength?
-          this.nthHouse++;
-          if (this.nthHouse == Math.abs(this.targetDoor)+1) {
-            this.state = State.DELIVERING; // found the right house!
-            Robot.stop();
-            this.distToHouse = Robot.dist;
-          }
-        this.prevSonic = Robot.sonic;
+    	while(Robot.dist < roadLength) {
+	    	System.out.println(Robot.sonic);
+	    	Robot.updateState(); 
+	        Robot.lineFollow(this.v,100,30,150,this.targetColor);  //v =100 pid=100 30 150 //v = 250 p = 350 i = 30 d= 500 tar = 0.312
+	        if (Robot.sonic < 40) {
+	        	this.nthHouse++;
+	        	if (this.nthHouse >= 600) {
+	        		this.state = State.DELIVERING; // found the right house!
+	        		Robot.stop();
+	        		this.distToHouse = Robot.dist;
+	        		break;
+	        	}
+	        }
+	        this.prevSonic = Robot.sonic;
+    	}
+//        if (Robot.dist > roadLength)
+//          // report failure
+//          System.out.println("reached end of road, didnt find anything :(");
+//        else if (Robot.sonic - this.prevSonic < -e*10) // what are you trying to test here? you're testing for posedge(sonic), but why drivewayLength?
+//          this.nthHouse++;
+//          if (this.nthHouse == Math.abs(this.targetDoor)+1) {
+//            this.state = State.DELIVERING; // found the right house!
+//            Robot.stop();
+//            this.distToHouse = Robot.dist;
+//          }
+//        this.prevSonic = Robot.sonic;
         break;
       case DELIVERING:
-        Robot.turn(90 * Math.signum(this.targetDoor));
-        if (Math.abs(Robot.gyro - this.initialOrientation) >= 90) {
-          Robot.stop();
-          Robot.drop(); // can do a blocking statement here because we don't care
-          this.state = State.TURNING_BACK;
-        }
+        Robot.rotateDeg(50,(int) (90 * Math.signum(this.targetDoor)));
+        Robot.drop(); // can do a blocking statement here because we don't care
+        this.state = State.TURNING_BACK;
         break;
       case TURNING_BACK:
         Robot.turn(-90 * Math.signum(this.targetDoor));  // should do a 180 degree turn

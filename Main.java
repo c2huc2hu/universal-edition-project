@@ -39,7 +39,7 @@ public class Main {
 			// sure integration works
 		  new Avoider(30), // avoider arg is "too close", deliberately un-comment this to look at whether or not delivery will integrate with other things.
 //		  new Pathfinder(),
-		  new Delivery(50,0.312f,targetDoors[targetSel[1]]) // arg: base speed when travelling on road, black line sonic value, need to put in target door
+		  new Delivery(100,0.312f,targetDoors[targetSel[1]]) // arg: base speed when travelling on road, black line sonic value, need to put in target door
 		}; 
 
 
@@ -57,7 +57,8 @@ public class Main {
 			if (Button.UP.isDown()) 
 				System.out.println(Robot.position);
 		}
-//		System.out.println(Robot.position); 
+//		System.out.println(Robot.position);
+		System.exit(0);
 	}
 	
 }
