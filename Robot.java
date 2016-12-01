@@ -59,15 +59,7 @@ public class Robot {
 	 * */
 	public static void grab() {
     	float GRIPPER_CLOSED_POSITION = 45; // angle that gripper should be rotated to
-    	float dist_goal = 1.5f;
 
-    	look(0);
-    	//float _dist = pollSonic(false); // from here
-    	//while (_dist > dist_goal) {
-    	//	_dist = pollSonic(false);
-    	//	Motor.C.forward();
-    	//	Motor.B.forward();
-    	//} // to here should be removed
     	Motor.A.setSpeed(GRIPPER_SPEED);
     	Motor.A.rotateTo((int) (GRIPPER_CLOSED_POSITION * GRIPPER_GEAR_RATIO));
 	}
