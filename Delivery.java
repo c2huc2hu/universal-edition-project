@@ -1,5 +1,6 @@
+
 public class Delivery implements Behavior {
-  // Left: -1 -2 -3
+  // Left: -3 -2 -1
   // Right: 1 2 3
   public int targetDoor;
   public float targetColor;
@@ -11,7 +12,7 @@ public class Delivery implements Behavior {
   public float b;	// width of block [cm]
   public float f;	// estimated poll frequency [1/s]
 
-  private float prevSonic = -10000; // the last value of the sonic reading
+  private float[] prevSonics = {10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000}; // the last value of the sonic reading
   private float nthHouse = 0; // the current house we're at
   private float distToHouse; // the distance to the desired house. need to backtrack this (or we could just look for a coloured loop)
   private float initialOrientation = 0;
@@ -25,18 +26,20 @@ public class Delivery implements Behavior {
     RETURNING,
     DONE
   }
-  public State state = State.START;
+  public State state = State.START;		// change this line to State.START for full run. to test sequences, change this line
 
   // Constructor with default values
-  public Delivery(int targetDoor, float targetColor) {
+  public Delivery(float v, float targetColor, int targetDoor) {
     this.targetDoor = targetDoor;
     this.targetColor = targetColor;
+    this.v = v;	  
     this.drivewayLength = 30f;
     this.roadLength = 140f;
   }
 
   // detailed constructor
-  public Delivery(int targetDoor, float targetColor, float drivewayLength, float roadLength) {
+  public Delivery(float v, float targetColor, int targetDoor, float drivewayLength, float roadLength) {
+    this.v = v;
     this.targetDoor = targetDoor;
     this.targetColor = targetColor;
     this.drivewayLength = drivewayLength;
@@ -55,38 +58,33 @@ public class Delivery implements Behavior {
   //	Robot is at a stop
   // 	on colored loop oriented antiparrallel to road
   public void act(int dummy) {
-    // Make sure ultrasonic is looking the right direction, i.e. toward the side
-	  System.out.println(this.state);
+    // look to the right.
+    // if house is on right, drive down road until we see the nth house. stop and drop
+    // if house is on left, drive down road, do a U turn, drive up road until nth house. stop and drop
+
+    System.out.println(this.state); // debug print
+	  
     switch(this.state) {
-      case START: // look toward the correct side
-        Robot.look((int)(90*Math.signum(this.targetDoor)));
-        this.initialOrientation = Robot.gyro;
-        this.state = State.FINDING_LINE;
+      case START:
+	// look to right
+	// offset self by 120 deg		    
+	// and go to the finding line state		  
+        Robot.look(-90);			// neg = to right
+        Robot.rotateDeg(200, 120); 		// turns in cw if 2nd arg is pos
+	this.state = State.FINDING_LINE;		    
         break;
-      case FINDING_LINE: // Find the line to follow
-        Robot.turn(20);
-        Robot.drive(20,-20);
+		    
+      case FINDING_LINE: 
+	// Find the line to follow by slowly turning ccw untill we stop ontop of the line
+	// when locked, stop self, reset odometers and 
+	// go to line following state		    
+        Robot.drive(-20,20); 			// turns in ccw if (-,+)
         if (Math.abs(Robot.color - this.targetColor) < e) {
-          this.state = State.LINE_FOLLOWING;
           Robot.stop();
           Robot.tachoReset();
+          this.state = State.LINE_FOLLOWING;
         }
         break;
-<<<<<<< HEAD
-      case LINE_FOLLOWING: // we need to test if we're on the line as well
-        Robot.lineFollow(this.v,350,30,500,this.targetColor);   //v = 250 p = 350 i = 30 d= 500 tar = 0.312
-        if (Robot.dist > roadLength)
-          // report failure
-          System.out.println("reached end of road, didnt find anything :(");
-        else if (Robot.sonic - this.prevSonic < -e*10) // what are you trying to test here? you're testing for posedge(sonic), but why drivewayLength?
-          this.nthHouse++;
-          if (this.nthHouse == Math.abs(this.targetDoor)+1) {
-            this.state = State.DELIVERING; // found the right house!
-            Robot.stop();
-            this.distToHouse = Robot.dist;
-          }
-        this.prevSonic = Robot.sonic;
-=======
 		    
       case LINE_FOLLOWING: 
 	// when locked on line invoke pid
@@ -166,40 +164,17 @@ public class Delivery implements Behavior {
     	}
 		Robot.stop();
 		this.state = State.DELIVERING; 			// force code to continue even if no house found
->>>>>>> c45959d... only thing left in delivery is that it doesn't stop it self after it is done
         break;
+		    		    
       case DELIVERING:
-<<<<<<< HEAD
-        Robot.turn(90 * Math.signum(this.targetDoor));
-        if (Math.abs(Robot.gyro - this.initialOrientation) >= 90) {
-          Robot.stop();
-          Robot.drop(); // can do a blocking statement here because we don't care
-          this.state = State.TURNING_BACK;
-        }
-=======
 		// Deliver the pizza by turning to the right and droping the pizza in the yard
         Robot.rotateDeg(50,90);			// turns slowly in cw dir 90 deg. 2nd arg is +
         Robot.drop();				// drops
 		Robot.stop();
         this.state = State.TURNING_BACK;	// switch state
->>>>>>> c45959d... only thing left in delivery is that it doesn't stop it self after it is done
         break;
+		    		    
       case TURNING_BACK:
-<<<<<<< HEAD
-        Robot.turn(-90 * Math.signum(this.targetDoor));  // should do a 180 degree turn
-        Robot.turn(-10);
-        Robot.drive(20,-20);
-        if (Math.abs(Robot.color - this.targetColor) < e) {
-          this.state = State.LINE_FOLLOWING;
-          Robot.stop();
-          Robot.tachoReset();
-          this.state = State.RETURNING;
-        }
-//         if (Math.abs(Robot.gyro - this.initialOrientation -180) <= 5) {
-//           Robot.tachoReset();
-//           this.state = RETURNING;
-//         }
-=======
 		// Aim self to go back.
 		//	do a U-ee and go backtrack distToHouse if house on right
 		//	go additional roadLenght - distToHouse if house on left
@@ -223,16 +198,9 @@ public class Delivery implements Behavior {
 			  this.state = State.RETURNING;
 			}
 		}
->>>>>>> c45959d... only thing left in delivery is that it doesn't stop it self after it is done
         break;
+		    
       case RETURNING:
-<<<<<<< HEAD
-        Robot.lineFollow(this.v,350,30,500,this.targetColor); // drive back to starting position. yolo because we don't care about following the line
-        if (Robot.dist >= this.distToHouse) { // could also be implemented with the colour sensor
-          this.state = State.DONE;
-        }
-        break;
-=======
 		// Go back to head of road.
 		//	travel distToHouse if house on right
 		//	travel roadLength - distToHouse if house on left
@@ -257,7 +225,6 @@ public class Delivery implements Behavior {
 		this.state = State.DONE;		    
 		break;	   
 		    
->>>>>>> c45959d... only thing left in delivery is that it doesn't stop it self after it is done
       default:
         System.out.println("this shouldn't happen: default state");
     }

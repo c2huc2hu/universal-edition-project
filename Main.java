@@ -45,7 +45,7 @@ public class Main {
 		//====================================================================		
 		// Richard grabs pizza
 		// initialize params
-		float s1,s2;
+		float s1 = 28,s2 = 53;
 		if (targetPizza[targetSel[0]] == -1){
 			s1 = 28;
 			s2 = 53;
@@ -57,8 +57,11 @@ public class Main {
 		// Allow dynamic adjustments
 		int sel = 0;
 		while(Button.ENTER.isUp()){
-			    if(sel > 1) sel=0;
+			    if(Button.RIGHT.isDown()) sel += 1;
+			    if(Button.LEFT.isDown())  sel -= 1;
+				if(sel > 1) sel=0;
 			    if(sel < 0) sel =1; //Rotates the selection menue
+				
 			    switch(sel){
 				case(0):
 					if(Button.UP.isDown()) s1+=1f;
