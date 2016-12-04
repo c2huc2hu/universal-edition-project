@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="UEfinal" default="dist" basedir="">
+
+
+	<property name="jar" value="${ant.project.name}.jar" />
+	<!-- change the main class name if not equal to the project name ie. ${ant.project.name} -->
+	<property name="main-class" value="Main" />
+	<property name="ev3.ipaddr" value="10.0.1.1" />
+	<property name="ev3.user" value="root" />
+	<property name="ev3.password" value="" />
+	<!--  change the value here by the path of the directory where ev3classes.jar is -->
+	<property name="ev3classes.path" value="C:\Program Files\leJOS-EV3\lib\ev3" />
+	<property name="src" value="src" />
+	<property name="build" value="bin" />
+	<property name="dist" value="dist" />
+
+
+
+	<path id="compile.classpath">
+    		<fileset dir="${ev3classes.path}">
+        		<include name="*.jar" />
+    		</fileset>
+	</path>
+
+	<target name="clean" description="delete old files">
+    	    <delete dir="${build}"/>
+	    <delete dir="${dist}"/>
+	</target>
+    
+	<target name="init">
+	    <!-- Create the time stamp -->
+	    <tstamp />
+	    <mkdir dir="${build}" />
+	</target>
+
+    
+	<target name="compile" depends="init" description="compile the sources">
+	    <!-- Compile the java code from ${src} into ${build} -->
+	    <javac srcdir="${src}" destdir="${build}" includeantruntime="false">
+	        <classpath refid="compile.classpath" />
+	    </javac>
+	</target>
+
+
+	<target name="dist" depends="compile" description="Create the jar for the EV3">
+	    <mkdir dir="${dist}" />
+	    <jar jarfile="${dist}/${jar}" includes="*.class" basedir="${build}">
+	        <fileset dir="${src}" excludes="*.java"/>
+	    </jar>
+	</target>
+
+
+</project>

@@ -1,3 +1,5 @@
+import lejos.hardware.Button; 
+
 public class Delivery implements Behavior {
   // Left: -3 -2 -1
   // Right: 1 2 3
@@ -46,7 +48,7 @@ public class Delivery implements Behavior {
   }
 
   public boolean checkActive() {
-    return Robot.readyToDeliver==1 && this.state != State.TURNING_BACK; // active when on line and not finished
+    return Robot.readyToDeliver==1 && this.state != State.DELIVERING; // active when on line and not finished
   }
 
   // Assumed start:
@@ -95,17 +97,34 @@ public class Delivery implements Behavior {
 		    
 	// travel down road first if house is one left		    
 	if(Math.signum(this.targetDoor)<0) {
-		while(Robot.dist < roadLength) {
-			System.out.println(Robot.sonic);
+		System.out.println("go to end");
+		System.out.println(this.roadLength);
+		while (Button.ENTER.isUp()) {};
+		while(Robot.dist < this.roadLength) {
+			System.out.println(Robot.dist);
 			Robot.updateState(); 
 			Robot.lineFollow(this.v,100,30,150,this.targetColor);  		//v =100 pid=100 30 150 //v = 250 p = 350 i = 30 d= 500 tar = 0.312
 		}
-		Robot.tachoReset();
+		Robot.stop();
+		Robot.rotateDeg(200,300);
+		Robot.drive(-20,20); 			// turns in ccw if (-,+)
+        	if (Math.abs(Robot.color - this.targetColor) < e) {
+          	Robot.stop();
+		System.out.println("ok,locked");	
+        }
+
 	}
+
+	Robot.tachoReset();
+	Robot.updateState();
 		    
-	// Go now and count the houses	    
-    	while(Robot.dist < roadLength) {
-	    	System.out.println(Robot.sonic);
+	// Go now and count the houses
+	System.out.println("going 2 house");
+	System.out.println(Robot.dist);
+	while (Button.ENTER.isUp()) {};
+	this.nthHouse = 0;    
+    	while(Robot.dist < this.roadLength) {
+	    	System.out.println(this.nthHouse);
 	    	Robot.updateState(); 
 	        Robot.lineFollow(this.v,100,30,150,this.targetColor);  			//v =100 pid=100 30 150 //v = 250 p = 350 i = 30 d= 500 tar = 0.312
 	        if (Robot.sonic < 40) {							// find the posedge
@@ -173,7 +192,7 @@ public class Delivery implements Behavior {
 	}
 	Robot.tachoReset();
 	Robot.readyToReturn = 1;		    
-	this.state = DONE;		    
+	this.state = State.DONE;		    
 	break;	   
 		    
       default:

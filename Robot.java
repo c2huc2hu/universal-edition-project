@@ -196,9 +196,10 @@ public class Robot {
 		Robot.LFderiv = err - Robot.LFlastErr; 
 		Robot.LFlastErr = err;
 		
-		float leftSpeed = v + p * err + i * Robot.LFintegral + d * Robot.LFderiv; 
-		float rightSpeed = v - (p * err + i * Robot.LFintegral + d * Robot.LFderiv);
+		//float leftSpeed = v + p * err + i * Robot.LFintegral + d * Robot.LFderiv; 
+		//float rightSpeed = v - (p * err + i * Robot.LFintegral + d * Robot.LFderiv);
 		
-		Robot.drive(leftSpeed, rightSpeed);
+		//Robot.drive(leftSpeed, rightSpeed);
+		Robot.drive(v,v);
 	}
 }
