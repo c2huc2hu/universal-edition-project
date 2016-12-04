@@ -8,10 +8,10 @@ public class Main {
 		Robot.updateState();
 		
 		int[] targetRoad = {1, 2, 3};
-		int[] targetDoors = {-3, -2, -1, 1, 2, 3};
+		int[] targetDoors = {-4,-3, -2, -1, 1, 2, 3,4};		// have up to 4 because we don't know if there will be road markers at demo
 		int[] targetPizza = {-1, 1};
-		int[] targetSel = {0,0,0};  // off set these so that we can have some clicks until we get into the negative numbers. 
-		int[] targetSize = {2,6,3};
+		int[] targetSel = {0,0,0};  						// off set these so that we can have some clicks until we get into the negative numbers. 
+		int[] targetSize = {2,8,3};
 		int i = 0;
 		
 		// Code for initial cmd input

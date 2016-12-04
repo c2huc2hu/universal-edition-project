@@ -48,7 +48,7 @@ public class Delivery implements Behavior {
   }
 
   public boolean checkActive() {
-    return Robot.readyToDeliver==1 && this.state != State.DELIVERING; // active when on line and not finished
+    return Robot.readyToDeliver==1 && this.state != State.DONE; // active when on line and not finished
   }
 
   // Assumed start:
@@ -120,103 +120,111 @@ public class Delivery implements Behavior {
 		    
 	// Go now and count the houses
 	this.nthHouse = 0;
-	int sum = 0; int currAvg = 0; int histAvg = 0;
+	float sum = 0; float currAvg = 0; float histAvg = 0; int i =0;
 	int passing = 0;
     	while(Robot.dist < this.roadLength) {
-	// idea is we take a average of 5 samples, around 20 samples ago.
-	// and check the average of the prev 5 samples.
-	// if the current average is below a threshold and 
-	// the current average - history average <-10 (d/dt<-10, a major decreasing function)
-	// then we have just arrived at a house, posedge.
-	// do the same for neg edge which allows us to "pass by the house"
-	// if houses are too small, we can have hist and curr be closer.
-	    	System.out.println(this.nthHouse);
-		
-		// update sonic history
-	    	Robot.updateState();
-		for(i = 0; i<24;i++) {this.prevSonics[i] = this.prevSonics[i+1];}
-		if (Robot.sonic==float.POSITIVE_INFINITY||Robot.sonic>50) this.prevSonics[4] = 10000;
-		else this.prevSonics[4] = Robot.sonic;
-		
-		// get avgs
-		sum = 0;
-		for(i = 20; i<25;i++)	{sum = sum + this.prevSonics[i];}
-		currAvg = sum/5;
-		sum = 0;
-		for(i = 0; i<5;i++)	{sum = sum + this.prevSonics[i];}
-		histAvg = sum/5;
+		// idea is we take a average of 5 samples, around 20 samples ago.
+		// and check the average of the prev 5 samples.
+		// if the current average is below a threshold and 
+		// the current average - history average <-10 (d/dt<-10, a major decreasing function)
+		// then we have just arrived at a house, posedge.
+		// do the same for neg edge which allows us to "pass by the house"
+		// if houses are too small, we can have hist and curr be closer.
+		// 5, 5 samples averages is exactly 10cm IRL
+			System.out.println(passing+" ; "+Robot.dist);
+			
+			// update sonic history
+			Robot.updateState();
+			for(i = 0; i<24;i++) {this.prevSonics[i] = this.prevSonics[i+1];}
+			if (Robot.sonic==Float.POSITIVE_INFINITY||Robot.sonic>50) this.prevSonics[24] = 10000;
+			else this.prevSonics[24] = Robot.sonic;
+			
+			// get avgs
+			sum = 0;
+			for(i = 20; i<25;i++)	{sum = sum + this.prevSonics[i];}
+			currAvg = sum/5;
+			sum = 0;
+			for(i = 0; i<5;i++)	{sum = sum + this.prevSonics[i];}
+			histAvg = sum/5;
 		
 	        Robot.lineFollow(this.v,100,30,150,this.targetColor);  			//v =100 pid=100 30 150 //v = 250 p = 350 i = 30 d= 500 tar = 0.312
 	        
-		if (currAvg-hisAvg<-10&&!passing){
-			if (currAvg < 35) {							// find the posedge
-				this.nthHouse++;						// increment nth house
-				if (this.nthHouse >= Math.abs(this.targetDoor)) {		// check if nth house is the correct house
-					Robot.stop();
-					this.distToHouse = Robot.dist;				// remember how ar it is from start of line to house
-					this.state = State.DELIVERING;
-					break;							// stop following line, go to next state
+			if (currAvg-histAvg<-10 && passing==0){
+				if (currAvg < 35) {							// find the posedge
+					this.nthHouse++;						// increment nth house
+					passing = 1;
+					if (this.nthHouse >= Math.abs(this.targetDoor)) {		// check if nth house is the correct house
+						Robot.stop();
+						this.distToHouse = Robot.dist;				// remember how ar it is from start of line to house
+						this.state = State.DELIVERING;
+						break;							// stop following line, go to next state
+					}
 				}
 			}
-		} else if (currAvg-hisAvg>10) passing = 0;
+			if(currAvg-histAvg>10) passing = 0;
     	}
-	this.state = State.DELIVERING; 			// force code to continue even if no house found
+		Robot.stop();
+		this.state = State.DELIVERING; 			// force code to continue even if no house found
         break;
 		    		    
       case DELIVERING:
-	// Deliver the pizza by turning to the right and droping the pizza in the yard
+		// Deliver the pizza by turning to the right and droping the pizza in the yard
         Robot.rotateDeg(50,90);			// turns slowly in cw dir 90 deg. 2nd arg is +
         Robot.drop();				// drops
+		Robot.stop();
         this.state = State.TURNING_BACK;	// switch state
         break;
 		    		    
       case TURNING_BACK:
-	// Aim self to go back.
-	//	do a U-ee and go backtrack distToHouse if house on right
-	//	go additional roadLenght - distToHouse if house on left
-	if(Math.signum(this.targetDoor)>0) {
-		// lock on to the road, pointing in the anti parallel dir by going cw
-		Robot.drive(20,-20); 					// turns in cw if (+,-)
-		if (Math.abs(Robot.color - this.targetColor) < e) {
-		  Robot.stop();
-		  Robot.tachoReset();
-		  this.state = State.RETURNING;
+		// Aim self to go back.
+		//	do a U-ee and go backtrack distToHouse if house on right
+		//	go additional roadLenght - distToHouse if house on left
+		if(Math.signum(this.targetDoor)>0) {
+			// lock on to the road, pointing in the anti parallel dir by going cw
+			Robot.rotateDeg(100,120);				// cw 120, 2nd arg is +
+			Robot.drive(-20,20); 					// turns in cw if (+,-)
+			if (Math.abs(Robot.color - this.targetColor) < e) {
+			  Robot.stop();
+			  Robot.tachoReset();
+			  this.state = State.RETURNING;
+			}
 		}
-        }
 		
-	if(Math.signum(this.targetDoor)<0) {
-		// lock on to the road, pointing in the same dir by going ccw
-		Robot.drive(-20,20); 					// turns in ccw if (-,+)
-		if (Math.abs(Robot.color - this.targetColor) < e) {
-		  Robot.stop();
-		  Robot.tachoReset();
-		  this.state = State.RETURNING;
+		if(Math.signum(this.targetDoor)<0) {
+			// lock on to the road, pointing in the same dir by going ccw
+			Robot.drive(-20,20); 					// turns in ccw if (-,+)
+			if (Math.abs(Robot.color - this.targetColor) < e) {
+			  Robot.stop();
+			  Robot.tachoReset();
+			  this.state = State.RETURNING;
+			}
 		}
-        }
         break;
 		    
       case RETURNING:
-	// Go back to head of road.
-	//	travel distToHouse if house on right
-	//	travel roadLength - distToHouse if house on left
-	if(Math.signum(this.targetDoor)>0) {
-		while(Robot.dist < this.distToHouse) {
-			System.out.println(Robot.sonic);
-			Robot.updateState(); 
-			Robot.lineFollow(this.v,100,30,150,this.targetColor);  		//v =100 pid=100 30 150 //v = 250 p = 350 i = 30 d= 500 tar = 0.312
+		// Go back to head of road.
+		//	travel distToHouse if house on right
+		//	travel roadLength - distToHouse if house on left
+		if(Math.signum(this.targetDoor)>0) {
+			while(Robot.dist < this.distToHouse) {
+				System.out.println(Robot.dist);
+				Robot.updateState(); 
+				Robot.lineFollow(this.v,100,30,150,this.targetColor);  		//v =100 pid=100 30 150 //v = 250 p = 350 i = 30 d= 500 tar = 0.312
+			}
 		}
-	}
-	if(Math.signum(this.targetDoor)<0) {
-		while(Robot.dist < this.roadLength - this.distToHouse) {
-			System.out.println(Robot.sonic);
-			Robot.updateState(); 
-			Robot.lineFollow(this.v,100,30,150,this.targetColor);  		//v =100 pid=100 30 150 //v = 250 p = 350 i = 30 d= 500 tar = 0.312
+		if(Math.signum(this.targetDoor)<0) {
+			while(Robot.dist < (this.roadLength - this.distToHouse)) {
+				System.out.println(Robot.dist);
+				Robot.updateState(); 
+				Robot.lineFollow(this.v,100,30,150,this.targetColor);  		//v =100 pid=100 30 150 //v = 250 p = 350 i = 30 d= 500 tar = 0.312
+			}
 		}
-	}
-	Robot.tachoReset();
-	Robot.readyToReturn = 1;		    
-	this.state = State.DONE;		    
-	break;	   
+		Robot.stop();
+		Robot.tachoReset();
+		Robot.updateState();
+		Robot.readyToReturn = 1;		    
+		this.state = State.DONE;		    
+		break;	   
 		    
       default:
         System.out.println("this shouldn't happen: default state");
