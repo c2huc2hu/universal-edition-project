@@ -13,7 +13,7 @@ public class Delivery implements Behavior {
   public float b;	// width of block [cm]
   public float f;	// estimated poll frequency [1/s]
 
-  private float prevSonic = -10000; // the last value of the sonic reading
+  private float[] prevSonics = {10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000}; // the last value of the sonic reading
   private float nthHouse = 0; // the current house we're at
   private float distToHouse; // the distance to the desired house. need to backtrack this (or we could just look for a coloured loop)
   private float initialOrientation = 0;
@@ -97,47 +97,70 @@ public class Delivery implements Behavior {
 		    
 	// travel down road first if house is one left		    
 	if(Math.signum(this.targetDoor)<0) {
-		System.out.println("go to end");
-		System.out.println(this.roadLength);
-		while (Button.ENTER.isUp()) {};
 		while(Robot.dist < this.roadLength) {
 			System.out.println(Robot.dist);
 			Robot.updateState(); 
 			Robot.lineFollow(this.v,100,30,150,this.targetColor);  		//v =100 pid=100 30 150 //v = 250 p = 350 i = 30 d= 500 tar = 0.312
 		}
 		Robot.stop();
-		Robot.rotateDeg(200,300);
-		Robot.drive(-20,20); 			// turns in ccw if (-,+)
-        	if (Math.abs(Robot.color - this.targetColor) < e) {
-          	Robot.stop();
-		System.out.println("ok,locked");	
-        }
-
+		Robot.rotateDeg(200,300);		// over shoot on doing the U-ee
+		Robot.drive(-20,20); 			// turns in ccw if (-,+) to lock on to path
+		while(1==1) {
+			Robot.updateState();
+			if (Math.abs(Robot.color - this.targetColor) < e) {
+				Robot.stop();
+				break;
+			}
+		}
 	}
-
-	Robot.tachoReset();
+	
+	// reset the Robot.dist variable
+	Robot.tachoReset();				
 	Robot.updateState();
 		    
 	// Go now and count the houses
-	System.out.println("going 2 house");
-	System.out.println(Robot.dist);
-	while (Button.ENTER.isUp()) {};
-	this.nthHouse = 0;    
+	this.nthHouse = 0;
+	int sum = 0; int currAvg = 0; int histAvg = 0;
+	int passing = 0;
     	while(Robot.dist < this.roadLength) {
+	// idea is we take a average of 5 samples, around 20 samples ago.
+	// and check the average of the prev 5 samples.
+	// if the current average is below a threshold and 
+	// the current average - history average <-10 (d/dt<-10, a major decreasing function)
+	// then we have just arrived at a house, posedge.
+	// do the same for neg edge which allows us to "pass by the house"
+	// if houses are too small, we can have hist and curr be closer.
 	    	System.out.println(this.nthHouse);
-	    	Robot.updateState(); 
+		
+		// update sonic history
+	    	Robot.updateState();
+		for(i = 0; i<24;i++) {this.prevSonics[i] = this.prevSonics[i+1];}
+		if (Robot.sonic==float.POSITIVE_INFINITY||Robot.sonic>50) this.prevSonics[4] = 10000;
+		else this.prevSonics[4] = Robot.sonic;
+		
+		// get avgs
+		sum = 0;
+		for(i = 20; i<25;i++)	{sum = sum + this.prevSonics[i];}
+		currAvg = sum/5;
+		sum = 0;
+		for(i = 0; i<5;i++)	{sum = sum + this.prevSonics[i];}
+		histAvg = sum/5;
+		
 	        Robot.lineFollow(this.v,100,30,150,this.targetColor);  			//v =100 pid=100 30 150 //v = 250 p = 350 i = 30 d= 500 tar = 0.312
-	        if (Robot.sonic < 40) {							// find the posedge
-	        	this.nthHouse++;						// increment nth house
-	        	if (this.nthHouse >= Math.abs(this.targetDoor)) {		// check if nth house is the correct house
-	        		Robot.stop();
-	        		this.distToHouse = Robot.dist;				// remember how ar it is from start of line to house
-				this.state = State.DELIVERING;
-	        		break;							// stop following line, go to next state
-	        	}
-	        }
-	        this.prevSonic = Robot.sonic;
+	        
+		if (currAvg-hisAvg<-10&&!passing){
+			if (currAvg < 35) {							// find the posedge
+				this.nthHouse++;						// increment nth house
+				if (this.nthHouse >= Math.abs(this.targetDoor)) {		// check if nth house is the correct house
+					Robot.stop();
+					this.distToHouse = Robot.dist;				// remember how ar it is from start of line to house
+					this.state = State.DELIVERING;
+					break;							// stop following line, go to next state
+				}
+			}
+		} else if (currAvg-hisAvg>10) passing = 0;
     	}
+	this.state = State.DELIVERING; 			// force code to continue even if no house found
         break;
 		    		    
       case DELIVERING:
