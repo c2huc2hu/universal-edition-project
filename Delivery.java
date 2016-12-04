@@ -1,5 +1,5 @@
 public class Delivery implements Behavior {
-  // Left: -1 -2 -3
+  // Left: -3 -2 -1
   // Right: 1 2 3
   public int targetDoor;
   public float targetColor;
@@ -57,11 +57,11 @@ public class Delivery implements Behavior {
   //	Robot is at a stop
   // 	on colored loop oriented antiparrallel to road
   public void act(int dummy) {
-	  // look to the right.
-	  // if house is on right, drive down road until we see the nth house. stop and drop
-	  // if house is on left, drive down road, do a U turn, drive up road until nth house. stop and drop
-	  
-	  System.out.println(this.state); // debug print
+    // look to the right.
+    // if house is on right, drive down road until we see the nth house. stop and drop
+    // if house is on left, drive down road, do a U turn, drive up road until nth house. stop and drop
+
+    System.out.println(this.state); // debug print
 	  
     switch(this.state) {
       case START:
