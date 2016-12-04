@@ -57,78 +57,125 @@ public class Delivery implements Behavior {
   //	Robot is at a stop
   // 	on colored loop oriented antiparrallel to road
   public void act(int dummy) {
-    // Make sure ultrasonic is looking the right direction, i.e. toward the side
+	  // look to the right.
+	  // if house is on right, drive down road until we see the nth house. stop and drop
+	  // if house is on left, drive down road, do a U turn, drive up road until nth house. stop and drop
+	  
 	  System.out.println(this.state); // debug print
+	  
     switch(this.state) {
-      case START: // look toward the correct side
-        Robot.look((int)(-90*Math.signum(this.targetDoor))); //POS IS TO LOOK RIGHT
-        this.initialOrientation = Robot.gyro;
-        this.state = State.FINDING_LINE;
-        Robot.rotateDeg(200, 80); //turns in cw
+      case START:
+	// look to right
+	// offset self by 120 deg		    
+	// and go to the finding line state		  
+        Robot.look(-90);			// neg = to right
+        Robot.rotateDeg(200, 120); 		// turns in cw if 2nd arg is pos
+	this.state = State.FINDING_LINE;		    
         break;
-      case FINDING_LINE: // Find the line to follow
-        Robot.drive(-20,20); // turns in ccw
+		    
+      case FINDING_LINE: 
+	// Find the line to follow by slowly turning ccw untill we stop ontop of the line
+	// when locked, stop self, reset odometers and 
+	// go to line following state		    
+        Robot.drive(-20,20); 			// turns in ccw if (-,+)
         if (Math.abs(Robot.color - this.targetColor) < e) {
-          this.state = State.LINE_FOLLOWING;
           Robot.stop();
           Robot.tachoReset();
+          this.state = State.LINE_FOLLOWING;
         }
         break;
-      case LINE_FOLLOWING: // we need to test if we're on the line as well
+		    
+      case LINE_FOLLOWING: 
+	// when locked on line invoke pid
+	// note we call updateState to poll necessary sensors (color)
+	// do line follow until:
+	//	the sonic sensor sees the nth house, if house is on right
+	// 	we go to the end of the road, do a U-ee, and sees the nth house on way back, if the house is on left
+	// completely blocking!!! non blocking doesn't work. :\
+		    
+	// travel down road first if house is one left		    
+	if(Math.signum(this.targetDoor)<0) {
+		while(Robot.dist < roadLength) {
+			System.out.println(Robot.sonic);
+			Robot.updateState(); 
+			Robot.lineFollow(this.v,100,30,150,this.targetColor);  		//v =100 pid=100 30 150 //v = 250 p = 350 i = 30 d= 500 tar = 0.312
+		}
+		Robot.tachoReset();
+	}
+		    
+	// Go now and count the houses	    
     	while(Robot.dist < roadLength) {
 	    	System.out.println(Robot.sonic);
 	    	Robot.updateState(); 
-	        Robot.lineFollow(this.v,100,30,150,this.targetColor);  //v =100 pid=100 30 150 //v = 250 p = 350 i = 30 d= 500 tar = 0.312
-	        if (Robot.sonic < 40) {
-	        	this.nthHouse++;
-	        	if (this.nthHouse >= 600) {
-	        		this.state = State.DELIVERING; // found the right house!
+	        Robot.lineFollow(this.v,100,30,150,this.targetColor);  			//v =100 pid=100 30 150 //v = 250 p = 350 i = 30 d= 500 tar = 0.312
+	        if (Robot.sonic < 40) {							// find the posedge
+	        	this.nthHouse++;						// increment nth house
+	        	if (this.nthHouse >= Math.abs(this.targetDoor)) {		// check if nth house is the correct house
 	        		Robot.stop();
-	        		this.distToHouse = Robot.dist;
-	        		break;
+	        		this.distToHouse = Robot.dist;				// remember how ar it is from start of line to house
+				this.state = State.DELIVERING;
+	        		break;							// stop following line, go to next state
 	        	}
 	        }
 	        this.prevSonic = Robot.sonic;
     	}
-//        if (Robot.dist > roadLength)
-//          // report failure
-//          System.out.println("reached end of road, didnt find anything :(");
-//        else if (Robot.sonic - this.prevSonic < -e*10) // what are you trying to test here? you're testing for posedge(sonic), but why drivewayLength?
-//          this.nthHouse++;
-//          if (this.nthHouse == Math.abs(this.targetDoor)+1) {
-//            this.state = State.DELIVERING; // found the right house!
-//            Robot.stop();
-//            this.distToHouse = Robot.dist;
-//          }
-//        this.prevSonic = Robot.sonic;
         break;
+		    		    
       case DELIVERING:
-        Robot.rotateDeg(50,(int) (90 * Math.signum(this.targetDoor)));
-        Robot.drop(); // can do a blocking statement here because we don't care
-        this.state = State.TURNING_BACK;
+	// Deliver the pizza by turning to the right and droping the pizza in the yard
+        Robot.rotateDeg(50,90);			// turns slowly in cw dir 90 deg. 2nd arg is +
+        Robot.drop();				// drops
+        this.state = State.TURNING_BACK;	// switch state
         break;
+		    		    
       case TURNING_BACK:
-        Robot.turn(-90 * Math.signum(this.targetDoor));  // should do a 180 degree turn
-        Robot.turn(-10);
-        Robot.drive(20,-20);
-        if (Math.abs(Robot.color - this.targetColor) < e) {
-          this.state = State.LINE_FOLLOWING;
-          Robot.stop();
-          Robot.tachoReset();
-          this.state = State.RETURNING;
+	// Aim self to go back.
+	//	do a U-ee and go backtrack distToHouse if house on right
+	//	go additional roadLenght - distToHouse if house on left
+	if(Math.signum(this.targetDoor)>0) {
+		// lock on to the road, pointing in the anti parallel dir by going cw
+		Robot.drive(20,-20); 					// turns in cw if (+,-)
+		if (Math.abs(Robot.color - this.targetColor) < e) {
+		  Robot.stop();
+		  Robot.tachoReset();
+		  this.state = State.RETURNING;
+		}
         }
-//         if (Math.abs(Robot.gyro - this.initialOrientation -180) <= 5) {
-//           Robot.tachoReset();
-//           this.state = RETURNING;
-//         }
+		
+	if(Math.signum(this.targetDoor)<0) {
+		// lock on to the road, pointing in the same dir by going ccw
+		Robot.drive(-20,20); 					// turns in ccw if (-,+)
+		if (Math.abs(Robot.color - this.targetColor) < e) {
+		  Robot.stop();
+		  Robot.tachoReset();
+		  this.state = State.RETURNING;
+		}
+        }
         break;
+		    
       case RETURNING:
-        Robot.lineFollow(this.v,350,30,500,this.targetColor); // drive back to starting position. yolo because we don't care about following the line
-        if (Robot.dist >= this.distToHouse) { // could also be implemented with the colour sensor
-          this.state = State.DONE;
-	  Robot.readyToReturn = 1;
-        }
-        break;
+	// Go back to head of road.
+	//	travel distToHouse if house on right
+	//	travel roadLength - distToHouse if house on left
+	if(Math.signum(this.targetDoor)>0) {
+		while(Robot.dist < this.distToHouse) {
+			System.out.println(Robot.sonic);
+			Robot.updateState(); 
+			Robot.lineFollow(this.v,100,30,150,this.targetColor);  		//v =100 pid=100 30 150 //v = 250 p = 350 i = 30 d= 500 tar = 0.312
+		}
+	}
+	if(Math.signum(this.targetDoor)<0) {
+		while(Robot.dist < this.roadLength - this.distToHouse) {
+			System.out.println(Robot.sonic);
+			Robot.updateState(); 
+			Robot.lineFollow(this.v,100,30,150,this.targetColor);  		//v =100 pid=100 30 150 //v = 250 p = 350 i = 30 d= 500 tar = 0.312
+		}
+	}
+	Robot.tachoReset();
+	Robot.readyToReturn = 1;		    
+	this.state = DONE;		    
+	break;	   
+		    
       default:
         System.out.println("this shouldn't happen: default state");
     }
