@@ -17,8 +17,8 @@ public class Avoider implements Behavior {
     }
 
     if (Robot.sonic < this.tooClose) {
-      Robot.drive(200, -200);
-      Robot.look(90);
+      Robot.drive(-200, 200);
+      Robot.look(-60);
       Robot.tachoReset();
       this.isAvoiding = true;
     }
@@ -26,6 +26,6 @@ public class Avoider implements Behavior {
   }
 
   public void act(int direction) {
-    Robot.drive(200, 200)
+    Robot.drive(200, 200);
   }
 }

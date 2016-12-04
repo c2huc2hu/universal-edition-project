@@ -12,7 +12,7 @@ public class Main {
  		  new Delivery(50,0.312f)
 		};
 
-		System.out.println("STARTING MAIN");
+		System.out.println("STARTING MAIN on delivery branch");
 		Button.waitForAnyPress();
 		Robot.gyroReset();
 		Robot.updateState();
@@ -30,8 +30,10 @@ public class Main {
 			Robot.updateState();
 			// System.out.println(Robot.position);
 
-			if (Button.UP.isDown())
+			if (Button.UP.isDown()) {
+				Robot.stop(); 
 				System.out.println(Robot.position);
+			}
 		}
 		System.out.println(Robot.position);
 	}

@@ -1,4 +1,4 @@
-public class doorVisit implements Behavior {
+/* public class doorVisit implements Behavior {
   public int targetDoor = 0;
   // Left: -1 -2 -3
   // Right: 1 2 3
@@ -20,3 +20,5 @@ public class doorVisit implements Behavior {
     // arrive at start of road
     // invoke next task
 }
+ 
+ */ 

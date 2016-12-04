@@ -174,7 +174,7 @@ public class Robot {
 		// save sensor readings
 		dist = pollDist(false);
 		gyro = pollGyro(false);
-		gyroR = Math.toRadians(gyro);
+		gyroR = (float) Math.toRadians(gyro);
 		color = pollColor(false);
 		sonic = pollSonic(false);
 
