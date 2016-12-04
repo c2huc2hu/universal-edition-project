@@ -8,6 +8,8 @@ public class Main {
 		Robot.gyroReset();
 		
 		int targetPizza = 1; //User input for location of the pizza
+		float s1 = 0;
+		float s2 = 0;
 		
 		while (Button.ESCAPE.isUp()) {
 			
@@ -26,12 +28,12 @@ public class Main {
 					break; 
 				case(1):
 					if (targetPizza == -1){ //Initializes the s1 and s2 values based on targetPizza
-						float s1 = 28;
-						float s2 = 53;
+						s1 = 28;
+						s2 = 53;
 					}
 					if (targetPizza == 1){
-						float s1 = 16;
-						float s2 = 40;
+						s1 = 16;
+						s2 = 40;
 					}
 					if(Button.UP.isDown()) s1+=1f;
 					if(Button.DOWN.isDown()) s1-=1f;
@@ -40,12 +42,12 @@ public class Main {
 					break;
 				case(2):
 					if (targetPizza == -1){
-						float s1 = 28;
-						float s2 = 53;
+						s1 = 28;
+						s2 = 53;
 					}
 					if (targetPizza == 1){
-						float s1 = 16;
-						float s2 = 40;
+						s1 = 16;
+						s2 = 40;
 					}
 					if(Button.UP.isDown()) s2+=1f;
 					if(Button.DOWN.isDown()) s2-=1f;
