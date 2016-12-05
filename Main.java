@@ -37,7 +37,7 @@ public class Main {
 			// we should try running combonations of behaviors too at some point to make
 			// sure integration works
 		  new Avoider(20), // avoider arg is "too close"
-		  new Pathfinder(),
+		  new Pathfinder(new Position(200, 0), 0, new Position(0,0), 0),
 		  new Delivery(100,0.312f,targetDoors[targetSel[1]]) // arg: base speed when travelling on road, black line sonic value, need to put in target door
 		};
 

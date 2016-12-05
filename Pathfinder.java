@@ -1,15 +1,18 @@
 class Pathfinder implements Behavior {
-	Position[] waypoints = {new Position(200, 0), new Position(0, 0)};
-	float[] angles = {90, 120};
+	Position[] waypoints = new Position[2];
+	float[] angles = new float[2];
 	int curWaypoint = 0;
 
-	public Pathfinder() {
-		// idk if it needs a constructor
+	public Pathfinder(Position roadHead, float angle1, Position origin, float angle2) {
+		waypoints[0] = roadHead; 
+		waypoints[1] = origin;
+		angles[0] = angle1; 
+		angles[1] = angle2; 
 	}
 
 	public boolean checkActive() {
 		// Robot.getPosition() && Robot.deliveredPizza;
-		return true; // default mode if nothing else works.
+		return Robot.readyToDeliver^Robot.readyToReturn;
 	}
 
 	public void act(int direction) {
@@ -24,7 +27,8 @@ class Pathfinder implements Behavior {
 			}
 			else {
 				curWaypoint = (curWaypoint + 1) % waypoints.length;
-				System.out.println("cur waypoint" + curWaypoint); 
+				System.out.println("cur waypoint" + curWaypoint);
+				Robot.readyToDeliver = 1;
 			}
 		}
 		else if (Utils.angleDiffR(Robot.gyroR, Math.atan2(dy, dx)) > Math.PI / 16) {
