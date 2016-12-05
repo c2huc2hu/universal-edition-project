@@ -13,7 +13,7 @@ public class Avoider implements Behavior {
   public boolean checkActive() {
 	// when we first see an obstacle, start turning, 
 	// and keep going until we no longer see it. 
-	
+	if (Robot.isPathTurning==1) return false;
 	switch(state) { 
 		case NOT_AVOIDING: 
 			if (Robot.sonic < this.tooClose) {

@@ -27,20 +27,21 @@ public class Main {
 			}
 			if ( i == 0) System.out.println("pizza: "+targetPizza[targetSel[i]]);
 			if ( i == 1) System.out.println("door: "+targetDoors[targetSel[i]]);
-			if ( i == 2) System.out.println("road: "+targetRoad[targetSel[i]]);
+			if ( i == 2) System.out.println("road: "+targetRoad[targetSel[i]]);			
+			Button.waitForAnyPress();
 		}
 		
 		switch(targetRoad[targetSel[2]]){
 			case(1):
-				Robot.roadHead = new Position(50,0);
-				Robot.roadAng = -45;
+				Robot.roadHead = new Position(100,50);
+				Robot.roadAng = 0;
 				break;
 			case(2):
-				Robot.roadHead = new Position(0,50);
+				Robot.roadHead = new Position(300,0);
 				Robot.roadAng = 45;
 				break;
 			case(3):
-				Robot.roadHead = new Position(50,50);
+				Robot.roadHead = new Position(100,-50);
 				Robot.roadAng = 0;
 				break;
 		}
@@ -90,6 +91,7 @@ public class Main {
 					System.out.println(s2);
 					break;
 				}
+				Button.waitForAnyPress();
 		}
 		System.out.println("GETTING pizza!! :D");
 		// initialize pizzaGrab obj
@@ -121,6 +123,5 @@ public class Main {
 				break;
 			}
 		}
-		System.exit(0); 
 	}
 }

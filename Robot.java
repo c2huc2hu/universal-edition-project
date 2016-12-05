@@ -29,7 +29,8 @@ public class Robot {
 	public static int readyToDeliver = 0;  // defualt values should be 0, set readyToDeliver to 1 to activate delivery behavior
 	public static int readyToReturn = 0;   // delivery behavior ends by setting this to 1
 					       // robot shouldn't be driven when we are delivering!! Check with XNOR
-    public static int isDone =0;							
+    public static int isDone =0;
+	public static int isPathTurning = 0;
 
 	public static void drive(float l, float r) {
 		// B-> to left C-> to right
@@ -89,8 +90,7 @@ public class Robot {
 		Robot.stop();
 	}
 	public static void stop() {
-		Motor.B.setSpeed(0);
-		Motor.C.setSpeed(0);
+		Robot.drive(0,0);
 	}
 
 	public static void rotateDeg(float s, int deg) {

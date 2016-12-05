@@ -1,7 +1,10 @@
+import lejos.hardware.Button;
+
 class Pathfinder implements Behavior {
 	Position[] waypoints = new Position[2];
 	float[] angles = new float[2];
 	int curWaypoint = 0;
+	float sign =1 ;
 
 	public Pathfinder(Position roadHead, float angle1, Position origin, float angle2) {
 		waypoints[0] = roadHead; 
@@ -19,29 +22,35 @@ class Pathfinder implements Behavior {
 		// calculate a path
 		double dx = waypoints[curWaypoint].x - Robot.position.x;
 		double dy = waypoints[curWaypoint].y - Robot.position.y;
-		
-		System.out.println(Robot.gyro);
+				
+		Robot.isPathTurning =0;
 		
 		if (dx*dx+dy*dy < 5) {
 			// close enough. we have reached the target
 			Robot.tachoReset();
-			if(Utils.angleDiffR(Robot.gyro,angles[curWaypoint]) >  Math.PI / 16) {
-				Robot.drive(75, -75);
+			if(Utils.angleDiff(Robot.gyro,angles[curWaypoint]) >  12) {
+				Robot.isPathTurning=1;
+				sign = Math.signum((int)(Utils.floorMod(Robot.gyro - angles[curWaypoint], 360)));
+				Robot.drive(35*sign, -35*sign);					// go cw if curr heading > target
 			}
-			else {
+			else {				
+				Robot.stop();
+				System.out.println("got to pose");
 				curWaypoint = (curWaypoint + 1);				// increment to next waypoint
 				Robot.readyToDeliver = 1;
 				if (curWaypoint>=waypoints.length) Robot.isDone =1;
 			}
 		}
-		else if (Utils.angleDiffR(Robot.gyroR, Math.atan2(dy, dx)) > Math.PI / 16) {
+		else if (Utils.angleDiff(Robot.gyro, (Math.atan2(dy, dx))*180/Math.PI) > 11&&(dx*dx+dy*dy)>12) {		// when we get close to the point, there is no point to adj heading more
 			// pivot toward target position if we're not at the right orientation
+			Robot.isPathTurning =1;
 			Robot.tachoReset();
-			Robot.drive(100, -100);
+			sign = Math.signum((int)(Utils.floorMod(Robot.gyro - Math.atan2(dy, dx)*180/Math.PI, 360)));
+			Robot.drive(-35*sign, 35*sign);						// go ccw if curr heading > target
 		}
 		else {
 			// drive forward
-			Robot.drive(150, 150);
+			Robot.drive(125, 125);
 		}
 	}
 }

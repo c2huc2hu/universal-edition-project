@@ -62,12 +62,11 @@ public class Delivery implements Behavior {
     // if house is on right, drive down road until we see the nth house. stop and drop
     // if house is on left, drive down road, do a U turn, drive up road until nth house. stop and drop
 
-    System.out.println(this.state); // debug print
+    //System.out.println(this.state); // debug print
 	  
     switch(this.state) {
       case START:
-	  System.out.println("delivery start");
-	  Button.waitForAnyPress();
+	  System.out.println(this.state);
 	// look to right
 	// offset self by 120 deg		    
 	// and go to the finding line state		  
@@ -76,7 +75,7 @@ public class Delivery implements Behavior {
 	this.state = State.FINDING_LINE;		    
         break;
 		    
-      case FINDING_LINE: 
+      case FINDING_LINE: 	  
 	// Find the line to follow by slowly turning ccw untill we stop ontop of the line
 	// when locked, stop self, reset odometers and 
 	// go to line following state		    
@@ -88,7 +87,8 @@ public class Delivery implements Behavior {
         }
         break;
 		    
-      case LINE_FOLLOWING: 
+      case LINE_FOLLOWING: 	  
+	  System.out.println(this.state);
 	// when locked on line invoke pid
 	// note we call updateState to poll necessary sensors (color)
 	// do line follow until:
@@ -99,7 +99,7 @@ public class Delivery implements Behavior {
 	// travel down road first if house is one left		    
 	if(Math.signum(this.targetDoor)<0) {
 		while(Robot.dist < this.roadLength) {
-			System.out.println(Robot.dist);
+			//System.out.println(Robot.dist);
 			Robot.updateState(); 
 			Robot.lineFollow(this.v,100,30,150,this.targetColor);  		//v =100 pid=100 30 150 //v = 250 p = 350 i = 30 d= 500 tar = 0.312
 		}
@@ -132,7 +132,8 @@ public class Delivery implements Behavior {
 		// do the same for neg edge which allows us to "pass by the house"
 		// if houses are too small, we can have hist and curr be closer.
 		// 5, 5 samples averages is exactly 10cm IRL
-			System.out.println(passing+" ; "+Robot.dist);
+		
+			//System.out.println(passing+" ; "+Robot.dist);
 			
 			// update sonic history
 			Robot.updateState();
@@ -168,7 +169,8 @@ public class Delivery implements Behavior {
 		this.state = State.DELIVERING; 			// force code to continue even if no house found
         break;
 		    		    
-      case DELIVERING:
+      case DELIVERING:	  
+	  System.out.println(this.state);
 		// Deliver the pizza by turning to the right and droping the pizza in the yard
         Robot.rotateDeg(50,90);			// turns slowly in cw dir 90 deg. 2nd arg is +
         Robot.drop();				// drops
@@ -202,30 +204,33 @@ public class Delivery implements Behavior {
 		}
         break;
 		    
-      case RETURNING:
+      case RETURNING:	  
+	  System.out.println(this.state);
 		// Go back to head of road.
 		//	travel distToHouse if house on right
 		//	travel roadLength - distToHouse if house on left
 		if(Math.signum(this.targetDoor)>0) {
 			while(Robot.dist < this.distToHouse) {
-				System.out.println(Robot.dist);
+				//System.out.println(Robot.dist);
 				Robot.updateState(); 
 				Robot.lineFollow(this.v,100,30,150,this.targetColor);  		//v =100 pid=100 30 150 //v = 250 p = 350 i = 30 d= 500 tar = 0.312
 			}
 		}
 		if(Math.signum(this.targetDoor)<0) {
 			while(Robot.dist < (this.roadLength - this.distToHouse)) {
-				System.out.println(Robot.dist);
+				//System.out.println(Robot.dist);
 				Robot.updateState(); 
 				Robot.lineFollow(this.v,100,30,150,this.targetColor);  		//v =100 pid=100 30 150 //v = 250 p = 350 i = 30 d= 500 tar = 0.312
 			}
 		}
 		Robot.stop();
+		Robot.look(0);
 		Robot.tachoReset();
 		Robot.updateState();
 		Robot.position = Robot.roadHead;
 		Robot.readyToReturn = 1;		    
-		this.state = State.DONE;		    
+		this.state = State.DONE;	
+		System.out.println(this.state);	    
 		break;	   
 		    
       default:
