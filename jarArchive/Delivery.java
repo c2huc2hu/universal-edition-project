@@ -67,7 +67,6 @@ public class Delivery implements Behavior {
     switch(this.state) {
       case START:
 	  System.out.println(this.state);
-	  Button.waitForAnyPress();
 	// look to right
 	// offset self by 120 deg		    
 	// and go to the finding line state		  

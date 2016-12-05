@@ -15,9 +15,9 @@ public class PizzaGrab {
         float convS = 360f/17.3f; //Conversion factor for going straight
         float convR = 2.05f; //conversion for the rotation
         float s1 = this.s1; //First go straight for 14cm
-        float r1 = 85 * this.targetPizza; //Rotate clockwise 90 degrees
+        float r1 = 90 * this.targetPizza; //Rotate clockwise 90 degrees
         float s2 = this.s2; //Go striaght for 56cm
-        float r2 = -85 * this.targetPizza; //Rotate 90 degrees counterclockwise
+        float r2 = -90 * this.targetPizza; //Rotate 90 degrees counterclockwise
         float s = 150; //Speed of the robot
 		float s_2 = 225; // speed to roatate 90 at. 300 seems to be more accurate... ?
 

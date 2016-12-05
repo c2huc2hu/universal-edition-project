@@ -33,16 +33,16 @@ public class Main {
 		
 		switch(targetRoad[targetSel[2]]){
 			case(1):
-				Robot.roadHead = new Position(100,50);
-				Robot.roadAng = 0;
+				Robot.roadHead = new Position(220,40);
+				Robot.roadAng = 30;
 				break;
 			case(2):
-				Robot.roadHead = new Position(300,0);
-				Robot.roadAng = 45;
+				Robot.roadHead = new Position(220,0);
+				Robot.roadAng = 0;
 				break;
 			case(3):
-				Robot.roadHead = new Position(100,-50);
-				Robot.roadAng = 0;
+				Robot.roadHead = new Position(220,-40);
+				Robot.roadAng = -30;
 				break;
 		}
 
@@ -55,6 +55,7 @@ public class Main {
 		  new Avoider(20), // avoider arg is "too close"
 		  new Pathfinder(Robot.roadHead, Robot.roadAng, new Position(0,0), 0),
 		  new Delivery(100,0.312f,targetDoors[targetSel[1]]) // arg: base speed when travelling on road, black line sonic value, need to put in target door
+		  //new DeliveryAlt(100,0.312f,targetDoors[targetSel[1]])
 		};
 		
 		//====================================================================		
