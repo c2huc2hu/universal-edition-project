@@ -7,7 +7,7 @@ public class Main {
 			// insert your behavior instantiation here
 			// we should try running combonations of behaviors too at some point to make
 			// sure integration works
-		  new Avoider(30), // avoider arg is "too close"
+		  new Avoider(20), // avoider arg is "too close"
 		  new Pathfinder(),
  		  new Delivery(50,0.312f)
 		};
@@ -34,8 +34,12 @@ public class Main {
 				Robot.stop(); 
 				System.out.println(Robot.position);
 			}
+			
+			if(Button.ESCAPE.isDown()) { 
+				System.exit(0);
+			}
 		}
 		System.out.println(Robot.position);
+		System.exit(0); 
 	}
-
 }
