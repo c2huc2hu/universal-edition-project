@@ -20,12 +20,12 @@ public class Robot {
 	private static Position lastFixedPosition = new Position(0, 0); // this is updated when we reset tacho
 	public static int ticksSinceLastObstacle = 0;
 
-	public static float color, sonic, gyro, gyroR, dist;
-
-	public static float LFintegral, LFderiv, LFlastErr;
-
-	public static int readyToDeliver = 1;
-	public static int readyToReturn = 0;
+	public static float color, sonic, gyro, gyroR, dist;	
+	public static float LFintegral = 0 , LFderiv = 0, LFlastErr = 0;
+	
+	public static int readyToDeliver = 1;  // defualt values should be 0, set readyToDeliver to 1 to activate delivery behavior
+	public static int readyToReturn = 0;   // delivery behavior ends by setting this to 1
+					       // robot shouldn't be driven when we are delivering!! Check with XNOR
 
 	public static void drive(float l, float r) {
 		// B-> to left C-> to right
@@ -60,15 +60,7 @@ public class Robot {
 	 * */
 	public static void grab() {
     	float GRIPPER_CLOSED_POSITION = 45; // angle that gripper should be rotated to
-    	float dist_goal = 1.5f;
 
-    	look(0);
-    	//float _dist = pollSonic(false); // from here
-    	//while (_dist > dist_goal) {
-    	//	_dist = pollSonic(false);
-    	//	Motor.C.forward();
-    	//	Motor.B.forward();
-    	//} // to here should be removed
     	Motor.A.setSpeed(GRIPPER_SPEED);
     	Motor.A.rotateTo((int) (GRIPPER_CLOSED_POSITION * GRIPPER_GEAR_RATIO));
 	}
@@ -97,7 +89,11 @@ public class Robot {
 		Motor.C.setSpeed(0);
 	}
 
-	/*
+	public static void rotateDeg(float s, int deg) {
+		float convR = 2.05f;
+		Robot.rotate(s, (int)(deg*convR), (int)(-deg*convR));
+	}
+	
 	public static void rotate(float s, int l, int r) {
 		// B-> to left C-> to right
 		// use s as a base speed for motor B arbitrarily
@@ -105,14 +101,13 @@ public class Robot {
 		Motor.C.setSpeed(Math.abs(s));
 		Motor.B.rotate(l,true);
 		Motor.C.rotate(r);
-	} */
+	} 
 
 	/*
 	public static void arc(float s, int l, int r) {
 		// B-> to left C-> to right
 		// use s as a base speed for motor B arbitrarily
 		float speedC = s * r / l;
-
 		Motor.B.setSpeed(Math.abs(s));
 		Motor.C.setSpeed(Math.abs(speedC));
 		Motor.B.rotate(l,true);
@@ -186,16 +181,31 @@ public class Robot {
 
 	public static void lineFollow(float v,int p, int i, int d,float tar) {
 		//v = 250 p = 350 i = 30 d= 500 tar = 0.312
+<<<<<<< HEAD
 		float err = tar - Robot.sonic;
 
 		Robot.LFintegral *= 0.98;
+=======
+		float err = tar - Robot.color;
+		
+		Robot.LFintegral *= 0.98; 
+>>>>>>> pizzaDelivery
 		Robot.LFintegral += err;
 		Robot.LFderiv = err - Robot.LFlastErr;
 		Robot.LFlastErr = err;
+<<<<<<< HEAD
 
 		float leftSpeed = v + p * err + i * Robot.LFintegral + d * Robot.LFderiv;
 		float rightSpeed = v - (p * err + i * Robot.LFintegral + d * Robot.LFderiv);
 
 		Robot.drive(leftSpeed, rightSpeed);
+=======
+		
+		//float leftSpeed = v + p * err + i * Robot.LFintegral + d * Robot.LFderiv; 
+		//float rightSpeed = v - (p * err + i * Robot.LFintegral + d * Robot.LFderiv);
+		
+		//Robot.drive(leftSpeed, rightSpeed);
+		Robot.drive(v,v);
+>>>>>>> pizzaDelivery
 	}
 }
