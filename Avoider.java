@@ -43,14 +43,14 @@ public class Avoider implements Behavior {
 	switch(this.state) {
 		case NOT_AVOIDING:
 			Robot.tachoReset(); 
-			Robot.drive(-200, 200); 
+			Robot.drive(-100, 100); 
 			break; 
 		case TURNING: 
 			Robot.tachoReset(); 
-			Robot.drive(-200, 200); 
+			Robot.drive(-100, 100); 
 			break; 
 		case PASSING: 
-			Robot.drive(200, 200); 
+			Robot.drive(100, 100); 
 			break; 
 	}
   }

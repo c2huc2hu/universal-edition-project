@@ -29,6 +29,21 @@ public class Main {
 			if ( i == 1) System.out.println("door: "+targetDoors[targetSel[i]]);
 			if ( i == 2) System.out.println("road: "+targetRoad[targetSel[i]]);
 		}
+		
+		switch(targetRoad[targetSel[2]]){
+			case(1):
+				Robot.roadHead = new Position(50,0);
+				Robot.roadAng = -45;
+				break;
+			case(2):
+				Robot.roadHead = new Position(0,50);
+				Robot.roadAng = 45;
+				break;
+			case(3):
+				Robot.roadHead = new Position(50,50);
+				Robot.roadAng = 0;
+				break;
+		}
 
 		//====================================================================		
 		
@@ -37,17 +52,9 @@ public class Main {
 			// we should try running combonations of behaviors too at some point to make
 			// sure integration works
 		  new Avoider(20), // avoider arg is "too close"
-		  new Pathfinder(new Position(200, 0), 0, new Position(0,0), 0),
+		  new Pathfinder(Robot.roadHead, Robot.roadAng, new Position(0,0), 0),
 		  new Delivery(100,0.312f,targetDoors[targetSel[1]]) // arg: base speed when travelling on road, black line sonic value, need to put in target door
 		};
-
-		System.out.println("STARTING MAIN on combined branch");
-		Button.waitForAnyPress();
-		Robot.gyroReset();
-		Robot.updateState();
-
-		// Code for initial cmd input
-
 		
 		//====================================================================		
 		// Richard grabs pizza
@@ -91,27 +98,27 @@ public class Main {
 		pizzaGrab.moveGrab();
 		
 		//====================================================================
-
 		// enter the obstacle and delivery codes.
 		System.out.println("Behaviors begin");
 
-		while (Button.ESCAPE.isUp()) {
+		while (Button.ESCAPE.isUp()||Robot.isDone == 0) {
+			
 			for(i=0; i<behaviours.length; i++){
 				if(behaviours[i].checkActive()) {
 					behaviours[i].act(-1);
 					break;
 				}
 			}
+			
 			Robot.updateState();
-			// System.out.println(Robot.position);
 
 			if (Button.UP.isDown()) {
 				Robot.stop(); 
 				System.out.println(Robot.position);
 			}
 			
-			if(Button.ESCAPE.isDown()) { 
-				System.exit(0);
+			if(Button.ESCAPE.isDown()) {
+				break;
 			}
 		}
 		System.exit(0); 

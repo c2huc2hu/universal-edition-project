@@ -12,33 +12,36 @@ class Pathfinder implements Behavior {
 
 	public boolean checkActive() {
 		// Robot.getPosition() && Robot.deliveredPizza;
-		return Robot.readyToDeliver^Robot.readyToReturn;
+		return (Robot.readyToDeliver-Robot.readyToReturn==0);
 	}
 
 	public void act(int direction) {
 		// calculate a path
 		double dx = waypoints[curWaypoint].x - Robot.position.x;
 		double dy = waypoints[curWaypoint].y - Robot.position.y;
+		
+		System.out.println(Robot.gyro);
+		
 		if (dx*dx+dy*dy < 5) {
 			// close enough. we have reached the target
 			Robot.tachoReset();
 			if(Utils.angleDiffR(Robot.gyro,angles[curWaypoint]) >  Math.PI / 16) {
-				Robot.drive(200, -200);
+				Robot.drive(75, -75);
 			}
 			else {
-				curWaypoint = (curWaypoint + 1) % waypoints.length;
-				System.out.println("cur waypoint" + curWaypoint);
+				curWaypoint = (curWaypoint + 1);				// increment to next waypoint
 				Robot.readyToDeliver = 1;
+				if (curWaypoint>=waypoints.length) Robot.isDone =1;
 			}
 		}
 		else if (Utils.angleDiffR(Robot.gyroR, Math.atan2(dy, dx)) > Math.PI / 16) {
 			// pivot toward target position if we're not at the right orientation
 			Robot.tachoReset();
-			Robot.drive(200, -200);
+			Robot.drive(100, -100);
 		}
 		else {
 			// drive forward
-			Robot.drive(200, 200);
+			Robot.drive(150, 150);
 		}
 	}
 }

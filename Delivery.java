@@ -1,4 +1,4 @@
-
+import lejos.hardware.Button;
 public class Delivery implements Behavior {
   // Left: -3 -2 -1
   // Right: 1 2 3
@@ -66,6 +66,8 @@ public class Delivery implements Behavior {
 	  
     switch(this.state) {
       case START:
+	  System.out.println("delivery start");
+	  Button.waitForAnyPress();
 	// look to right
 	// offset self by 120 deg		    
 	// and go to the finding line state		  
@@ -221,6 +223,7 @@ public class Delivery implements Behavior {
 		Robot.stop();
 		Robot.tachoReset();
 		Robot.updateState();
+		Robot.position = Robot.roadHead;
 		Robot.readyToReturn = 1;		    
 		this.state = State.DONE;		    
 		break;	   

@@ -19,6 +19,9 @@ public class Robot {
 	public static Position position = new Position(0, 0);
 	private static Position lastFixedPosition = new Position(0, 0); // this is updated when we reset tacho
 	public static int ticksSinceLastObstacle = 0;
+	
+	public static Position roadHead = new Position(50,0);
+	public static float roadAng = -45;
 
 	public static float color, sonic, gyro, gyroR, dist;	
 	public static float LFintegral = 0 , LFderiv = 0, LFlastErr = 0;
@@ -26,6 +29,7 @@ public class Robot {
 	public static int readyToDeliver = 0;  // defualt values should be 0, set readyToDeliver to 1 to activate delivery behavior
 	public static int readyToReturn = 0;   // delivery behavior ends by setting this to 1
 					       // robot shouldn't be driven when we are delivering!! Check with XNOR
+    public static int isDone =0;							
 
 	public static void drive(float l, float r) {
 		// B-> to left C-> to right
